@@ -1,0 +1,97 @@
+SQL Query
+
+CREATE DATABASE Budget_Analysis;
+
+USE Budget_Analysis;
+
+SELECT TOP 10 * FROM cleaned_budget_data;
+
+SELECT COUNT(*)[Total rows] FROM cleaned_budget_data;
+
+-- 1. Overall Performance
+-- Calculates total budget, actuals, and variance
+
+SELECT 
+    SUM([Budget_Amount]) AS Total_Budget,
+    SUM([Actual_Amount]) AS Total_Actual,
+    SUM(Variance) AS Total_Variance
+FROM cleaned_budget_data;
+
+-- Variance = Actual - Budget
+-- Positive → Overspending
+-- Negative → Savings
+
+-- 2. Department-wise Analysis
+
+SELECT 
+    Department,
+    SUM([Budget_Amount]) AS Total_Budgeted_amount,
+    SUM([Actual_Amount]) AS Actual,
+    SUM(Variance) AS Variance
+FROM cleaned_budget_data
+GROUP BY Department
+ORDER BY Variance DESC;
+
+-- Insight
+-- Top row = highest overspending
+-- Bottom = best control
+
+select * from cleaned_budget_data;
+
+-- Variance % by Department
+
+SELECT 
+    Department,
+    AVG([Variance_Percentage]) AS Avg_Variance_Percentage
+FROM cleaned_budget_data
+GROUP BY Department
+ORDER BY Avg_Variance_Percentage DESC;
+
+--rename column
+EXEC sp_rename 
+'cleaned_budget_data.Variance1', 
+'Variance_Percentage', 
+'COLUMN';
+
+--3. Category-wise Analysis
+
+SELECT 
+    Category,
+    SUM(Variance) AS Total_Variance
+FROM cleaned_budget_data
+GROUP BY Category
+ORDER BY Total_Variance DESC;
+
+--Insight
+--Salaries contribute the most to overspending, indicating higher payroll costs than planned — possibly due to hiring, increments, or bonuses.
+--Major Cost Drivers
+-- Utilities and Marketing are also significant contributors to overspending, suggesting inefficiencies in operational costs and aggressive marketing spend.
+
+--4. Region-wise Analysis
+
+SELECT 
+    Region,
+    SUM(Variance) AS Total_Variance
+FROM cleaned_budget_data
+GROUP BY Region;
+
+-- 5. Monthly Trend
+
+SELECT 
+    FORMAT([Date], 'yyyy-MM') AS Month,
+    SUM([Budget_Amount]) AS Budget,
+    SUM([Actual_Amount]) AS Actual
+FROM cleaned_budget_data
+GROUP BY FORMAT([Date], 'yyyy-MM')
+ORDER BY Month;
+
+--6. Overspending Records
+SELECT *
+FROM cleaned_budget_data
+WHERE Variance > 0;
+
+--7. Top 5 Overspending Transactions
+SELECT TOP 5 *
+FROM cleaned_budget_data
+ORDER BY Variance DESC;
+
