@@ -29,7 +29,7 @@ The dataset contains:
 
 ## Dashboard
 
-![Dashboard](images/dashboard.png)
+![Dashboard](images/dashboard.PNG)
 
 ## Insights
 
